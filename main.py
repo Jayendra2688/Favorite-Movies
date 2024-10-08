@@ -7,8 +7,6 @@ from flask_wtf import FlaskForm
 from wtforms import StringField, SubmitField
 from wtforms.validators import DataRequired
 import requests
-# api_key="d366a11d349469acb489a388416ed43d"
-# api_access_token = "eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJkMzY2YTExZDM0OTQ2OWFjYjQ4OWEzODg0MTZlZDQzZCIsIm5iZiI6MTcyMzUyNjIwNi44MTE4NTIsInN1YiI6IjY2YjYwZDdmNDI1ZTE3YzUzZjAxNWQ4MCIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.lGuUUOxCHrTJECWWcmwQCmpvA8PtuUd2ewJ71TZyJZM"
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = '8BYkEfBA6O6donzWlSihBXox7C0sKR6b'
@@ -71,19 +69,12 @@ second_movie = Movie(
     img_url="https://image.tmdb.org/t/p/w500/t6HIqrRAclMCA60NsSmeqe9RmNV.jpg"
 )
 
-#
-# with app.app_context():
-#     db.session.add(second_movie)
-#     db.session.add(new_movie)
-#     db.session.commit()
+
 
 
 @app.route("/")
 def home():
 
-    # all_movies = db.session.execute(db.select(Movie).order_by(Movie.rating)).scalars().all()
-    # for i in range(len(all_movies)):
-    #     all_movies[i].ranking = len(all_movies)-i
     all_movies = db.session.execute(db.select(Movie).order_by(desc(Movie.rating))).scalars().all()
     for i in range(len(all_movies)):
         all_movies[i].ranking = i+1
@@ -97,7 +88,7 @@ def edit():
     edit_form = Editform()
     with app.app_context():
         movie = db.session.execute(db.select(Movie).where(Movie.id == id)).scalar()
-    # movie = db.get_or_404(Movie,id)
+
     if edit_form.validate_on_submit():
         with app.app_context():
             movie = db.session.execute(db.select(Movie).where(Movie.id == id)).scalar()
@@ -150,7 +141,7 @@ def add_movie(title):
     db.session.add(new_movie)
     db.session.commit()
     movie_by_id = db.session.execute(db.select(Movie).where(Movie.title==title)).scalar()
-    #here scalar() is imp
+
     return redirect(url_for('edit',id=movie_by_id.id))
 if __name__ == '__main__':
     app.run(debug=False)
